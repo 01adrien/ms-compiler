@@ -1,0 +1,19 @@
+package mscompiler.expression;
+
+import mscompiler.env.Env;
+import mscompiler.value.Value;
+
+public record IfExp(Expression condition, Expression consequent, Expression alternative) implements Expression {
+
+    @Override
+    public String toString() {
+        return String.format("(if %s %s %s)", condition, consequent, alternative);
+    }
+
+    @Override
+    public Value interpret(Env env) {
+        return condition.interpret(env).as(Boolean.class)
+                ? consequent.interpret(env)
+                : alternative.interpret(env);
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "workbench.startupEditor": "none",
+  "workbench.statusBar.visible": false,
+  "workbench.sideBar.location": "left",
+  "editor.minimap.enabled": false,
+  "editor.renderLineHighlight": "none",
+  "editor.renderWhitespace": "none",
+  "editor.cursorBlinking": "solid",
+  "editor.fontSize": 14,
+  "editor.smoothScrolling": true,
+  "files.autoSave": "onFocusChange",
+  "breadcrumbs.enabled": true,
+  "explorer.openEditors.visible": 1,
+  "extensions.ignoreRecommendations": true,
+  "workbench.editor.enablePreview": true,
+  "workbench.editor.enablePreviewFromQuickOpen": true,
+  "workbench.editor.closeOnFileDelete": true,
+  "editor.formatOnSave": true,
+  "java.project.referencedLibraries": [
+    "lib/**/*.jar"
+  ],
+  "files.watcherExclude": {
+    "**/target": true
+  }
+}
