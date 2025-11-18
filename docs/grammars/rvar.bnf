@@ -1,0 +1,44 @@
+<exp> ::= <int>
+        | "(read)"
+        | "(-" <exp> ")"
+        | "(+" <exp> <exp> ")"
+        | <var>
+        | "(let" "(" <binding> ")" <exp> ")"
+
+<binding> ::= "[" <var> <exp> "]"
+
+<var> ::= <symbol>
+
+<int> ::= [0-9]+
+<symbol> ::= [a-zA-Z_][a-zA-Z0-9_]*
+
+<RVar> ::= <exp>
+
+
+
+
+<reg> ::= rsp | rbp | rax | rbx | rcx | rdx | rsi | rdi
+        | r8 | r9 | r10 | r11 | r12 | r13 | r14 | r15
+        # registres 64-bit standard pour AMD64
+
+<arg> ::= $<int>           # immédiat, exemple: $42
+        | %<reg>           # registre, exemple: %rax
+        | <int>(%<reg>)    # adresse mémoire relative à un registre, exemple: 16(%rbp)
+
+<label> ::= <symbol>        # nom de label
+
+<instr> ::= addq <arg>, <arg>   # addition de 64 bits
+          | subq <arg>, <arg>   # soustraction de 64 bits
+          | negq <arg>          # négation d’un registre ou mémoire
+          | movq <arg>, <arg>   # copie d’un arg vers un autre
+          | callq <label>       # appel de fonction
+          | pushq <arg>         # empilement
+          | popq <arg>          # dépilement
+          | retq                # retour d’une fonction
+          | jmp <label>         # saut inconditionnel
+
+<line> ::= <label>: <instr>      # instruction avec label facultatif
+         | <instr>               # instruction seule
+
+<program> ::= .globl main        # déclaration globale pour le linker
+            <line>*              # suite d’instructions

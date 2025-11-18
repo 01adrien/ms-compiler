@@ -1,6 +1,6 @@
 package mscompiler.value;
 
-import mscompiler.env.Primitive;
+import mscompiler.interpreter.Primitive;
 
 public record PrimitiveVal(Primitive value) implements Value {
 

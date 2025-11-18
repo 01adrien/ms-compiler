@@ -8,4 +8,5 @@ public enum ValueType {
     NUMBER,
     PRIMITIVE,
     STRING,
+    SYMBOL,
 }

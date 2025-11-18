@@ -3,8 +3,8 @@ package mscompiler.expression;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import mscompiler.env.Env;
-import mscompiler.env.EnvBinding;
+import mscompiler.interpreter.Env;
+import mscompiler.interpreter.EnvBinding;
 import mscompiler.utils.ListUtils;
 import mscompiler.value.LambdaVal;
 import mscompiler.value.PrimitiveVal;
@@ -23,6 +23,7 @@ public record ApplicationExp(Expression function, List<Expression> args) impleme
                 .stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(" "));
+
         return "(" + function + (argsStr.isEmpty() ? "" : " " + argsStr) + ")";
     }
 
@@ -41,6 +42,12 @@ public record ApplicationExp(Expression function, List<Expression> args) impleme
         } else {
             throw new RuntimeException("Not a function: " + fn);
         }
+    }
+
+    @Override
+    public Void generateAsm() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateAsm'");
     }
 
 }

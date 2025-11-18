@@ -1,6 +1,6 @@
 package mscompiler.expression;
 
-import mscompiler.env.Env;
+import mscompiler.interpreter.Env;
 import mscompiler.value.Value;
 
 public record VarExp(String id) implements Expression {
@@ -14,4 +14,11 @@ public record VarExp(String id) implements Expression {
     public Value interpret(Env env) {
         return env.lookup(id);
     }
+
+    @Override
+    public Void generateAsm() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateAsm'");
+    }
+
 }

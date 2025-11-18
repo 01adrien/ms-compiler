@@ -1,0 +1,32 @@
+NFA -> DFA
+
+La ε-closure (ou closure(S)) d’un ensemble d’états S d’un automate non déterministe est 
+l’ensemble de tous les états que l’on peut atteindre à partir de S sans lire aucun symbole,
+c’est-à-dire en ne suivant que des ε-transitions. Formellement, c’est le plus petit ensemble 
+T tel que S ⊆ T, et si un état s de T a une transition ε vers un état t, alors t appartient aussi à T.
+
+En pratique, on la calcule en partant des états de S, puis en ajoutant récursivement tous les états 
+accessibles par ε-transitions jusqu’à ce qu’il n’y ait plus de nouveaux états à ajouter. 
+La ε-closure sert à simuler un NFA ou à le convertir en DFA, car elle permet de savoir tous 
+les états possibles où l’automate peut se trouver sans consommer de symbole d’entrée.
+
+
+ALGO
+
+closure(S):
+    T := S
+    repeat
+        for each s in T:
+            for each t in edge(s, ε):
+                T := T ∪ {t}
+    until T ne change plus
+    return T
+
+
+| Élément      | Signification                                                    |
+| ------------ | ---------------------------------------------------------------- |
+| `edge(s, ε)` | États accessibles depuis s par une transition ε                  |
+| `closure(S)` | Plus petit ensemble contenant S, fermé pour les ε-transitions    |
+| Propriétés   | S ⊆ T, et si s ∈ T et t ∈ edge(s, ε) alors t ∈ T                 |
+| Usage        | Sert à construire les ensembles d’états du DFA à partir d’un NFA |
+

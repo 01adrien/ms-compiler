@@ -1,6 +1,5 @@
 package mscompiler.lexer;
 
-
 import static mscompiler.lexer.TokenType.*;
 
 public record Token(TokenType type, String value, Position position) {

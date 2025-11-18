@@ -1,0 +1,4 @@
+- passer les fonctions and et or en forme speciale, pour l'instant elles evaluent tous les arguments (faire court circuit)
+
+- attention a l'immutabilité des car et cdr
+

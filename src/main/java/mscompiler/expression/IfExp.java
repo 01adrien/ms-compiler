@@ -1,6 +1,6 @@
 package mscompiler.expression;
 
-import mscompiler.env.Env;
+import mscompiler.interpreter.Env;
 import mscompiler.value.Value;
 
 public record IfExp(Expression condition, Expression consequent, Expression alternative) implements Expression {
@@ -16,4 +16,11 @@ public record IfExp(Expression condition, Expression consequent, Expression alte
                 ? consequent.interpret(env)
                 : alternative.interpret(env);
     }
+
+    @Override
+    public Void generateAsm() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateAsm'");
+    }
+
 }

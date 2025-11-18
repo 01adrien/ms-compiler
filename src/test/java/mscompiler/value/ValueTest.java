@@ -2,8 +2,6 @@ package mscompiler.value;
 
 import org.junit.jupiter.api.Test;
 
-
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ValueTest {
@@ -60,7 +58,6 @@ public class ValueTest {
     void testAsThrows() {
         BooleanVal b = new BooleanVal(true);
 
-        // Conversion incorrecte doit lancer RuntimeException
         assertThrows(RuntimeException.class, () -> b.as(Integer.class));
     }
 

@@ -3,7 +3,7 @@ package mscompiler.value;
 import java.util.Optional;
 
 public sealed interface Value
-        permits BooleanVal, NumberVal, StringVal, NilVal, ConsVal, LambdaVal, PrimitiveVal {
+        permits BooleanVal, NumberVal, StringVal, NilVal, ConsVal, LambdaVal, PrimitiveVal, SymbolVal {
 
     Object value();
 

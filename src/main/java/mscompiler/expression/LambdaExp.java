@@ -1,9 +1,9 @@
-package  mscompiler.expression;
+package mscompiler.expression;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import mscompiler.env.Env;
+import mscompiler.interpreter.Env;
 import mscompiler.value.LambdaVal;
 import mscompiler.value.Value;
 
@@ -23,6 +23,12 @@ public record LambdaExp(List<String> params, Expression body) implements Express
     @Override
     public Value interpret(Env env) {
         return new LambdaVal(params, body, env);
+    }
+
+    @Override
+    public Void generateAsm() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateAsm'");
     }
 
 }

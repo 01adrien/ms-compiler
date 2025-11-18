@@ -1,6 +1,6 @@
 package mscompiler.expression;
 
-import mscompiler.env.Env;
+import mscompiler.interpreter.Env;
 import mscompiler.value.BooleanVal;
 import mscompiler.value.Value;
 
@@ -27,4 +27,11 @@ public record BooleanExp(boolean value) implements Expression {
     public Value interpret(Env env) {
         return new BooleanVal(value);
     }
+
+    @Override
+    public Void generateAsm() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateAsm'");
+    }
+
 }

@@ -1,5 +1,7 @@
 package mscompiler.env;
 
+import mscompiler.interpreter.Env;
+import mscompiler.interpreter.EnvBinding;
 import mscompiler.value.*;
 import org.junit.jupiter.api.Test;
 
@@ -24,8 +26,7 @@ class EnvTest {
         parent.define("a", new NumberVal(1.0));
 
         Env child = parent.extend(List.of(
-                new EnvBinding("b", new NumberVal(2.0))
-        ));
+                new EnvBinding("b", new NumberVal(2.0))));
 
         // parent doit rester inchangé
         assertTrue(parent.isPresent("a"));

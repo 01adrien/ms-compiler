@@ -3,16 +3,12 @@ package mscompiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Predicate;
 import mscompiler.lexer.Token;
 import mscompiler.lexer.TokenType;
 import mscompiler.expression.*;
 import static mscompiler.utils.ListUtils.*;
 
-public class MsParser {
-
-    private record ParserResult(Expression expression, List<Token> remainingTokens) {
-    };
+public class MsParser extends Parser {
 
     public List<Expression> run(List<Token> tokens) {
         List<Expression> expressions = new ArrayList<>();
@@ -27,9 +23,9 @@ public class MsParser {
         return expressions;
     }
 
-    public ParserResult parse(List<Token> tokens) {
+    private ParserResult parse(List<Token> tokens) {
         return checkNotEmpty(tokens)
-                .map(toks -> switch (toks.get(0).type()) {
+                .map(toks -> switch (first(toks).type()) {
                     case LEFT_PAREN ->
                         parseExpression(skipFirst(toks));
                     case SYMBOL ->
@@ -38,14 +34,14 @@ public class MsParser {
                         parseTerminal(toks);
                     default ->
                         throw new RuntimeException(
-                                String.format(errorFromToken(toks.get(0))));
+                                String.format(errorFromToken(first(toks))));
                 })
                 .orElseThrow(() -> new RuntimeException("1 Unexpected end of input"));
     }
 
     private ParserResult parseExpression(List<Token> tokens) {
         return checkNotEmpty(tokens)
-                .map(toks -> switch (toks.get(0).type()) {
+                .map(toks -> switch (first(toks).type()) {
                     case IF ->
                         parseIf(skipFirst(toks));
                     case LET ->
@@ -57,7 +53,7 @@ public class MsParser {
                     case LAMBDA ->
                         parseLambda(skipFirst(toks));
                     default ->
-                        throw new RuntimeException(errorFromToken(toks.get(0)));
+                        throw new RuntimeException(errorFromToken(first(toks)));
                 })
                 .orElseThrow(() -> new RuntimeException("2 Unexpected end of input"));
     }
@@ -80,13 +76,13 @@ public class MsParser {
                 new IfExp(
                         condition.expression(),
                         consequent.expression(),
-                        alternative != null ? alternative.expression() : null),
+                        alternative.expression()),
                 rest);
     }
 
     private ParserResult parseTerminal(List<Token> tokens) {
 
-        Token tok = tokens.get(0);
+        Token tok = first(tokens);
 
         return switch (tok.type()) {
             case BOOLEAN ->
@@ -116,18 +112,17 @@ public class MsParser {
         Stack<TokenType> separatorStack = new Stack<>();
 
         while (!firstTokenEqual(t -> t.isCloseParenthesis(), toks)) {
-            Token open = toks.get(0);
+            Token open = first(toks);
             toks = consume(t -> t.isOpenSep(), toks);
             separatorStack.push(open.type());
-            String name = toks.get(0).value();
+            String name = first(toks).value();
             ParserResult res = parse(skipFirst(toks));
             bindings.add(new LetBinding(name, res.expression()));
 
-            Token close = res.remainingTokens().get(0);
+            Token close = first(res.remainingTokens());
             if (!matchSeparators(separatorStack.pop(), close.type())) {
                 throw new RuntimeException("Mismatched binding separators in let");
             }
-            // toks = skipFirst(res.remainingTokens());
 
             toks = consume(t -> t.isCloseSep(), res.remainingTokens());
         }
@@ -142,12 +137,12 @@ public class MsParser {
 
     private ParserResult parseVar(List<Token> tokens) {
         return new ParserResult(
-                new VarExp(tokens.get(0).value()),
+                new VarExp(first(tokens).value()),
                 skipFirst(tokens));
     }
 
     private ParserResult parseDefine(List<Token> tokens) {
-        String id = tokens.get(0).value();
+        String id = first(tokens).value();
         ParserResult res = parse(skipFirst(tokens));
 
         return new ParserResult(
@@ -160,7 +155,7 @@ public class MsParser {
         List<String> params = new ArrayList<>();
 
         while (!firstTokenEqual(t -> t.isCloseParenthesis(), toks)) {
-            String param = toks.get(0).value();
+            String param = first(toks).value();
             params.add(param);
             toks = skipFirst(toks);
         }
@@ -189,29 +184,6 @@ public class MsParser {
         return new ParserResult(
                 new ApplicationExp(function, args),
                 skipFirst(toks));
-    }
-
-    private List<Token> consume(Predicate<Token> pred, List<Token> tokens) {
-        return checkNotEmpty(tokens)
-                .filter(toks -> pred.test(first(toks)))
-                .map(toks -> skipFirst(toks))
-                .orElseThrow(() -> new RuntimeException("Unexpected end of input"));
-    }
-
-    private boolean firstTokenEqual(Predicate<Token> pred, List<Token> tokens) {
-        return checkNotEmpty(tokens)
-                .map(t -> pred.test(t.get(0)))
-                .orElseThrow(() -> new RuntimeException("Unexpected end of input"));
-
-    }
-
-    private boolean matchSeparators(TokenType open, TokenType close) {
-        return (open == TokenType.LEFT_PAREN && close == TokenType.RIGHT_PAREN)
-                || (open == TokenType.LEFT_BRACKET && close == TokenType.RIGHT_BRACKET);
-    }
-
-    private String errorFromToken(Token token) {
-        return String.format("Error at line %d, column %d", token.line(), token.column());
     }
 
 }

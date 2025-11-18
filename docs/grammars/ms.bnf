@@ -1,0 +1,30 @@
+
+<Expression> ::= <NumberExp> 
+               | <BooleanExp> 
+               | <IfExp> 
+               | <LetExp> 
+               | <VarExp>
+               | <LambdaExp>
+               | <DefineExp>
+               | <ApplicationExp>
+
+<NumberExp>  ::= <int>
+
+<BooleanExp> ::= "true" | "false"
+
+<IfExp>      ::= "(if" <Expression> <Expression> <Expression> ")"
+
+<LetExp>     ::= "(let" "(" (<binding>)+ ")" <Expression> ")"
+<binding>    ::= "[" <symbol> <Expression> "]"
+
+<VarExp>     ::= <symbol>
+
+<LambdaExp>  ::= "(lambda" "(" <symbol>+ ")" <Expression> ")"
+
+<DefineExp>  ::= "(define" <symbol> <Expression> ")"
+
+<ApplicationExp> ::= "(" <Expression> <Expression>* ")"
+
+<int>        ::= [0-9]+(\.[0-9]+)?
+
+<symbol>     ::= [!$%&*/:<=>?@^_~a-zA-Z+-][!$%&*/:<=>?@^_~a-zA-Z0-9+-]*

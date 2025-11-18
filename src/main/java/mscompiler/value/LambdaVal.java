@@ -2,8 +2,8 @@ package mscompiler.value;
 
 import java.util.List;
 
-import mscompiler.env.Env;
 import mscompiler.expression.Expression;
+import mscompiler.interpreter.Env;
 
 public record LambdaVal(
         List<String> params, Expression body, Env env)

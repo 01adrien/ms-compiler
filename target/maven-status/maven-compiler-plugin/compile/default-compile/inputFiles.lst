@@ -23,6 +23,7 @@
 /home/adrien/Bureau/ms-compiler/src/main/java/mscompiler/expression/Expression.java
 /home/adrien/Bureau/ms-compiler/src/main/java/mscompiler/lexer/Token.java
 /home/adrien/Bureau/ms-compiler/src/main/java/mscompiler/expression/IfExp.java
+/home/adrien/Bureau/ms-compiler/src/main/java/mscompiler/value/SymbolVal.java
 /home/adrien/Bureau/ms-compiler/src/main/java/mscompiler/env/Env.java
 /home/adrien/Bureau/ms-compiler/src/main/java/mscompiler/value/ConsVal.java
 /home/adrien/Bureau/ms-compiler/src/main/java/mscompiler/lexer/TokenType.java

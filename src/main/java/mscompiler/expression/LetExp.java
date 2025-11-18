@@ -3,10 +3,9 @@ package mscompiler.expression;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import mscompiler.env.Env;
-import mscompiler.env.EnvBinding;
+import mscompiler.interpreter.Env;
+import mscompiler.interpreter.EnvBinding;
 import mscompiler.value.Value;
-
 
 public record LetExp(List<LetBinding> bindings, Expression exp) implements Expression {
 
@@ -30,6 +29,12 @@ public record LetExp(List<LetBinding> bindings, Expression exp) implements Expre
                 .map((b) -> new EnvBinding(b.id(), b.exp().interpret(env)))
                 .toList();
         return exp.interpret(env.extend(newBindings));
+    }
+
+    @Override
+    public Void generateAsm() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateAsm'");
     }
 
 }
