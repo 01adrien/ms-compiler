@@ -2,6 +2,10 @@ package mscompiler.value;
 
 import org.junit.jupiter.api.Test;
 
+import mscompiler.scheme.value.BooleanVal;
+import mscompiler.scheme.value.NumberVal;
+import mscompiler.scheme.value.StringVal;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ValueTest {
