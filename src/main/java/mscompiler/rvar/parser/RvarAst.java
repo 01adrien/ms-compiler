@@ -1,22 +1,27 @@
 package mscompiler.rvar.parser;
 
-sealed interface RvarAst permits RvarAstInt, RvarAstRead, RvarAstNeg, RvarAstPlus, RvarAstVar, RvarAstLet {
+import java.util.List;
+
+import mscompiler.lib.parser.Ast;
+import mscompiler.lib.parser.AstLetBinding;
+
+public interface RvarAst extends Ast<RvarAst> {
 }
 
-record RvarAstInt(long value) implements RvarAst {
+record RvarAstInt(int value) implements RvarAst {
 }
 
 record RvarAstRead() implements RvarAst {
 }
 
-record RvarAstNeg(RvarAst e) implements RvarAst {
+record RvarAstNeg(RvarAst a) implements RvarAst {
 }
 
-record RvarAstPlus(RvarAst e1, RvarAst e2) implements RvarAst {
+record RvarAstPlus(RvarAst a, RvarAst b) implements RvarAst {
 }
 
-record RvarAstVar(String name) implements RvarAst {
+record RvarAstVar(String id) implements RvarAst {
 }
 
-record RvarAstLet(String name, RvarAst rhs, RvarAst body) implements RvarAst {
+record RvarAstLet(List<AstLetBinding<RvarAst>> bindings, RvarAst body) implements RvarAst {
 }

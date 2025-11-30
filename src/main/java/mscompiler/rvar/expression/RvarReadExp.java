@@ -1,20 +1,13 @@
 package mscompiler.rvar.expression;
 
-import java.util.Scanner;
-
-import mscompiler.rvar.env.RvarEnv;
+import mscompiler.rvar.interpreter.RvarVisitor;
+import mscompiler.rvar.value.RvarVal;
 
 public record RvarReadExp() implements RvarExpression {
 
     @Override
-    public Integer interpret(RvarEnv env) {
-        return new Scanner(System.in).nextInt();
-    }
-
-    @Override
-    public Void generateAsm() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateAsm'");
+    public RvarVal accept(RvarVisitor visitor) {
+        return visitor.visit(this);
     }
 
 }

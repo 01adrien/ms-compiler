@@ -1,9 +1,8 @@
 package mscompiler.lib.expression;
 
 import mscompiler.lib.env.Env;
+import mscompiler.lib.env.Value;
 
-public interface Expression<O extends Object, V extends Env<?, ?>> {
-    O interpret(V env);
-
-    Void generateAsm();
+public interface Expression<O extends Value, V extends Env<O>> {
+    // <R> R accept(Visitor<R> visitor);
 }

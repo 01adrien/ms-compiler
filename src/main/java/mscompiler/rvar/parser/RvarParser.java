@@ -1,9 +1,9 @@
 package mscompiler.rvar.parser;
 
-import mscompiler.lib.env.Env;
-import mscompiler.lib.expression.Expression;
-import mscompiler.lib.expression.LetBinding;
 import mscompiler.lib.lexer.Token;
+import mscompiler.lib.parser.Ast;
+import mscompiler.lib.parser.AstFactory;
+import mscompiler.lib.parser.AstLetBinding;
 import mscompiler.lib.parser.ParseRule;
 import mscompiler.lib.parser.ParserResult;
 
@@ -22,18 +22,19 @@ import static mscompiler.utils.ListUtils.skipFirst;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RvarParser<O, E extends Expression<O, V>, T extends Token, V extends Env<String, O>, B extends LetBinding<O, V>> {
-    public final ParseRule<E, T> parse;
-    public final ParseRule<E, T> parseExpression;
-    public final ParseRule<E, T> parseNum;
-    public final ParseRule<E, T> parseVar;
-    public final ParseRule<E, T> parseLet;
-    public final ParseRule<E, T> parsePlus;
-    public final ParseRule<E, T> parseMinus;
-    public final ParseRule<E, T> parseRead;
-    public final RvarExpFactory<O, E, V, B> factory;
+public class RvarParser<A extends Ast<A>, T extends Token> {
+    public final ParseRule<A, T> parse;
+    public final ParseRule<A, T> parseExpression;
+    public final ParseRule<A, T> parseNum;
+    public final ParseRule<A, T> parseVar;
+    public final ParseRule<A, T> parseLet;
+    public final ParseRule<A, T> parsePlus;
+    public final ParseRule<A, T> parseNeg;
+    public final ParseRule<A, T> parseRead;
 
-    public RvarParser(RvarExpFactory<O, E, V, B> _factory) {
+    public final AstFactory<A> factory;
+
+    public RvarParser(AstFactory<A> _factory) {
         factory = _factory;
         parse = this::parseFn;
         parseExpression = this::parseExpressionFn;
@@ -41,24 +42,25 @@ public class RvarParser<O, E extends Expression<O, V>, T extends Token, V extend
         parseVar = this::parseVarFn;
         parseLet = this::parseLetFn;
         parsePlus = this::parsePlusFn;
-        parseMinus = this::parseMinusFn;
+        parseNeg = this::parseNegFn;
         parseRead = this::parseReadFn;
+
     }
 
-    public List<E> run(List<T> tokens) {
-        List<E> expressions = new ArrayList<>();
+    public List<A> run(List<T> tokens) {
+        List<A> expressions = new ArrayList<>();
         List<T> current = tokens;
 
         while (!current.isEmpty()) {
-            ParserResult<E, T> result = parseFn(current);
-            expressions.add(result.expression());
+            ParserResult<A, T> result = parseFn(current);
+            expressions.add(result.node());
             current = result.remainingTokens();
         }
 
         return expressions;
     }
 
-    private ParserResult<E, T> parseFn(List<T> tokens) {
+    public ParserResult<A, T> parseFn(List<T> tokens) {
         return checkNotEmpty(tokens)
                 .map(toks -> switch (first(toks).type()) {
                     case LEFT_PAREN -> parseExpressionFn(skipFirst(toks));
@@ -69,11 +71,11 @@ public class RvarParser<O, E extends Expression<O, V>, T extends Token, V extend
                 .orElseThrow(() -> new RuntimeException("Unexpected end of input"));
     }
 
-    private ParserResult<E, T> parseExpressionFn(List<T> tokens) {
+    public ParserResult<A, T> parseExpressionFn(List<T> tokens) {
         return checkNotEmpty(tokens)
                 .map(toks -> switch (first(toks).type()) {
                     case PLUS -> parsePlusFn(skipFirst(toks));
-                    case MINUS -> parseMinusFn(skipFirst(toks));
+                    case MINUS -> parseNegFn(skipFirst(toks));
                     case READ -> parseReadFn(skipFirst(toks));
                     case LET -> parseLetFn(skipFirst(toks));
                     default -> throw new RuntimeException("Unknown expression " + first(toks).value());
@@ -81,74 +83,76 @@ public class RvarParser<O, E extends Expression<O, V>, T extends Token, V extend
                 .orElseThrow(() -> new RuntimeException("Unexpected end of input"));
     }
 
-    private ParserResult<E, T> parseNumFn(List<T> tokens) {
+    public ParserResult<A, T> parseNumFn(List<T> tokens) {
         T tok = first(tokens);
         return new ParserResult<>(
-                factory.makeNumber(Integer.parseInt(tok.value())),
+                factory.makeInt(Integer.parseInt(tok.value())),
                 skipFirst(tokens));
     }
 
-    private ParserResult<E, T> parseVarFn(List<T> tokens) {
+    public ParserResult<A, T> parseVarFn(List<T> tokens) {
         return new ParserResult<>(
                 factory.makeVar(first(tokens).value()),
                 skipFirst(tokens));
     }
 
-    private ParserResult<E, T> parsePlusFn(List<T> tokens) {
-        ParserResult<E, T> a = parseFn(tokens);
-        ParserResult<E, T> b = parseFn(a.remainingTokens());
+    public ParserResult<A, T> parsePlusFn(List<T> tokens) {
+        ParserResult<A, T> a = parseFn(tokens);
+        ParserResult<A, T> b = parseFn(a.remainingTokens());
 
         tokens = consume(t -> t.isCloseSep(), b.remainingTokens());
 
         return new ParserResult<>(
-                factory.makePlus(a.expression(), b.expression()), tokens);
+                factory.makePlus(a.node(), b.node()), tokens);
     }
 
-    private ParserResult<E, T> parseMinusFn(List<T> tokens) {
-        ParserResult<E, T> e = parseFn(tokens);
+    public ParserResult<A, T> parseNegFn(List<T> tokens) {
+        ParserResult<A, T> e = parseFn(tokens);
         tokens = consume(t -> t.isCloseSep(), e.remainingTokens());
-        return new ParserResult<>(factory.makeNeg(e.expression()), tokens);
+        return new ParserResult<>(factory.makeNeg(e.node()), tokens);
     }
 
-    private ParserResult<E, T> parseReadFn(List<T> tokens) {
+    public ParserResult<A, T> parseReadFn(List<T> tokens) {
         return new ParserResult<>(
                 factory.makeRead(),
                 consume(t -> t.isCloseSep(), tokens));
     }
 
-    private ParserResult<E, T> parseLetFn(List<T> tokens) {
-        // Consommer la parenthèse ouvrante après 'let'
-        T open = first(tokens);
-        List<T> toks = consume(t -> t.isOpenSep(), tokens);
+    public ParserResult<A, T> parseLetFn(List<T> tokens) {
+        tokens = consume(t -> t.isOpenSep(), tokens);
 
-        List<B> bindings = new ArrayList<>();
+        List<AstLetBinding<A>> bindings = new ArrayList<>();
 
-        while (!firstTokenEqual(t -> t.isCloseSep(), toks)) {
-            // Nom de la variable
-            String name = first(toks).value();
-            toks = skipFirst(toks);
+        T open;
 
-            // Expression associée
-            ParserResult<E, T> res = parseFn(toks);
-            bindings.add(factory.makeBinding(name, res.expression()));
+        while (!firstTokenEqual(t -> t.isCloseSep(), tokens)) {
 
-            // Vérifier la fermeture de la binding
+            open = first(tokens);
+            tokens = consume(t -> t.isOpenSep(), tokens);
+
+            String name = first(tokens).value();
+            tokens = skipFirst(tokens);
+
+            ParserResult<A, T> res = parseFn(tokens);
+            bindings.add(new AstLetBinding<>(name, res.node()));
+
             T close = first(res.remainingTokens());
             if (!matchSeparators(open.type(), close.type())) {
                 throw new RuntimeException("Mismatched binding separators in let");
             }
 
-            // Avancer après la fermeture de la binding
-            toks = consume(t -> t.isCloseSep(), res.remainingTokens());
+            tokens = consume(t -> t.isCloseSep(), res.remainingTokens());
         }
 
-        // Consommer la fermeture de la liste de bindings
-        toks = consume(t -> t.isCloseSep(), toks);
+        tokens = consume(t -> t.isCloseSep(), tokens);
 
-        // Parser le corps du let
-        ParserResult<E, T> body = parseFn(toks);
+        ParserResult<A, T> body = parseFn(tokens);
 
-        return new ParserResult<>(factory.makeLet(bindings, body.expression()), body.remainingTokens());
+        tokens = consume(t -> t.isCloseSep(), body.remainingTokens());
+
+        return new ParserResult<>(
+                factory.makeLet(bindings, body.node()),
+                tokens);
     }
 
 }

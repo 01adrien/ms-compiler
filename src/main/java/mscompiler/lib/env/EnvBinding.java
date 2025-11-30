@@ -1,4 +1,4 @@
 package mscompiler.lib.env;
 
-public record EnvBinding<K, V>(K id, V val) {
+public record EnvBinding<V extends Value>(String id, V val) {
 }

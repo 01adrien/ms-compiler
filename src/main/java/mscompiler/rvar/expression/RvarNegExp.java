@@ -1,17 +1,13 @@
 package mscompiler.rvar.expression;
 
-import mscompiler.rvar.env.RvarEnv;
+import mscompiler.rvar.interpreter.RvarVisitor;
+import mscompiler.rvar.value.RvarVal;
 
-public record RvarNegExp(RvarExpression e) implements RvarExpression {
-
-    @Override
-    public Integer interpret(RvarEnv env) {
-        return -1 * e.interpret(env);
-    }
+public record RvarNegExp(RvarExpression exp) implements RvarExpression {
 
     @Override
-    public Void generateAsm() {
-        throw new UnsupportedOperationException("Unimplemented method 'generateAsm'");
+    public RvarVal accept(RvarVisitor visitor) {
+        return visitor.visit(this);
     }
 
 }

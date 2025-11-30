@@ -8,21 +8,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import mscompiler.lib.expression.Expression;
 import mscompiler.lib.lexer.Token;
 
-public record One<E extends Expression<?, ?>, T extends Token>(
+public record One<A extends Ast<A>, T extends Token>(
                 Predicate<T> pred,
-                Function<T, E> mapper) implements ParseRule<E, T> {
+                Function<T, A> mapper) implements ParseRule<A, T> {
 
         @Override
-        public ParserResult<E, T> parse(List<T> tokens) {
+        public ParserResult<A, T> parse(List<T> tokens) {
                 return checkNotEmpty(tokens)
                                 .flatMap(toks -> Optional.of(first(toks))
                                                 .filter(pred)
                                                 .map(mapper)
-                                                .map(expr -> new ParserResult<E, T>(expr, skipFirst(tokens))))
+                                                .map(expr -> new ParserResult<A, T>(expr, skipFirst(tokens))))
                                 .orElseThrow(() -> new RuntimeException("Unexpected token or end of input"));
         }
 }

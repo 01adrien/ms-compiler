@@ -5,7 +5,6 @@ import static mscompiler.lib.lexer.CommonTokenType.*;
 import java.util.List;
 import java.util.function.Predicate;
 
-import mscompiler.lib.expression.Expression;
 import mscompiler.lib.lexer.Token;
 import mscompiler.lib.lexer.TokenType;
 
@@ -32,7 +31,7 @@ public class ParserUtils {
                 || (open == LEFT_BRACKET && close == RIGHT_BRACKET);
     }
 
-    public static <T extends Token, E extends Expression<?, ?>> ParserResult<E, T> nothing() {
+    public static <T extends Token, A extends Ast<A>> ParserResult<A, T> nothing() {
         return new ParserResult<>(null, List.of());
     }
 

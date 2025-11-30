@@ -1,8 +1,9 @@
 package mscompiler.lib.expression;
 
 import mscompiler.lib.env.Env;
+import mscompiler.lib.env.Value;
 
-public class LetBinding<O extends Object, V extends Env<?, ?>> {
+public class LetBinding<O extends Value, V extends Env<O>> {
 
     protected final String id;
     protected final Expression<O, V> exp;

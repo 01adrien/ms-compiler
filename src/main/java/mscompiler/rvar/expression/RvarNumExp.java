@@ -1,27 +1,13 @@
 package mscompiler.rvar.expression;
 
-import mscompiler.rvar.env.RvarEnv;
+import mscompiler.rvar.interpreter.RvarVisitor;
+import mscompiler.rvar.value.RvarVal;
 
-public record RvarNumExp(Integer n) implements RvarExpression {
-
-    public RvarNumExp(String str) {
-        this(Integer.valueOf(str));
-    }
+public record RvarNumExp(Integer value) implements RvarExpression {
 
     @Override
-    public String toString() {
-        return n.toString();
-    }
-
-    @Override
-    public Integer interpret(RvarEnv env) {
-        return n;
-    }
-
-    @Override
-    public Void generateAsm() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'generateAsm'");
+    public RvarVal accept(RvarVisitor visitor) {
+        return visitor.visit(this);
     }
 
 }

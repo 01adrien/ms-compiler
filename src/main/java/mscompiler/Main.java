@@ -1,76 +1,81 @@
 package mscompiler;
 
+import mscompiler.lib.env.Env;
 import mscompiler.lib.lexer.Lexer;
-import mscompiler.lib.parser.One;
-import mscompiler.lib.parser.ParserResult;
+import mscompiler.rvar.compiler.RvarCompiler;
 import mscompiler.rvar.expression.RvarExpression;
-import mscompiler.rvar.expression.RvarNumExp;
+import mscompiler.rvar.interpreter.RvarInterpreter;
+import mscompiler.rvar.interpreter.RvarVisitor;
 import mscompiler.rvar.lexer.RvarLexerBuilder;
 import mscompiler.rvar.lexer.RvarToken;
-import mscompiler.rvar.lexer.RvarTokenType;
+import mscompiler.rvar.parser.RvarAst;
+import mscompiler.rvar.parser.RvarAstFactory;
+import mscompiler.rvar.parser.RvarExpBuilder;
 import mscompiler.rvar.parser.RvarParser;
-import mscompiler.scheme.lexer.SchemeLexerBuilder;
+import mscompiler.rvar.value.RvarVal;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
+    rvar();
+  }
 
-        RvarLexerBuilder lexerBuilder = new RvarLexerBuilder();
-        var lexer = lexerBuilder.build();
-        // RvarParser parser = new RvarParser();
+  public static void rvar() {
 
-        List<RvarToken> tokens = lexer.tokenize("(- 5)");
-        // List<RvarExpression> expressions = parser.run(tokens);
+    String i1 = """
+        (let ([x (let ([x 3]) (+ x 1))])
+          (let ([x (+ x 2)])
+            x))                                                                                                                                                        """;
+    String i2 = "(let ([x 32]) x)";
 
-        // One<RvarExpression, RvarToken> parseOne = new One<>(
-        // t -> t.type() == RvarTokenType.NUMBER,
-        // t -> new RvarNumExp(t.value()));
+    Lexer<RvarToken> lexer = new RvarLexerBuilder().build();
 
-        // ParserResult<RvarExpression, RvarToken> res = parseOne.parse(tokens);
+    List<RvarToken> tokens = lexer.tokenize(i1);
 
-    }
+    RvarParser<RvarAst, RvarToken> parser = new RvarParser<>(new RvarAstFactory());
 
-    public static void rvar() {
-        // String input = """
-        // (let ([x (+ 1 2)])
-        // (let ([y (- (read))])
-        // (+ x (+ y 10))))
-        // """;
-        // ;
+    List<RvarAst> nodes = parser.run(tokens);
 
-        // Lexer lexer = new RvarLexerBuilder().build();
+    Env<RvarVal> env = new Env<>(null);
 
-        // List<Token> tokens = lexer.tokenize(input);
+    RvarInterpreter visitor = new RvarInterpreter(env);
 
-        // RvarParser parser = new RvarParser();
+    RvarExpression exp = new RvarExpBuilder(nodes.get(0)).build();
 
-        // List<Expression> expressions = parser.run(tokens);
+    // System.out.println(exp.accept(visitor));
 
-        // SchemeEnv env = new SchemeEnv(null);
+    RvarCompiler compiler = new RvarCompiler();
 
-        // for (Expression expression : expressions) {
-        // System.out.println(expression.interpret(env));
-        // }
+    System.out.println("SRC");
+    System.out.println(i1);
+    System.out.println();
+    System.out.println("-".repeat(30));
 
-    }
+    compiler.compile(exp);
 
-    public static void ms() {
-        // String input = "(let ([x 32]) (print (+ (let ([x 10]) x) x)))";
+    System.out.println();
+    System.out.println();
 
-        // Lexer lexer = new SchemeLexerBuilder().build();
+  }
 
-        // List<Token> tokens = lexer.tokenize(input);
+  public static void ms() {
+    // String input = "(let ([x 32]) (print (+ (let ([x 10]) x) x)))";
 
-        // MsParser parser = new MsParser();
+    // Lexer lexer = new SchemeLexerBuilder().build();
 
-        // List<Expression> expressions = parser.run(tokens);
+    // List<Token> tokens = lexer.tokenize(input);
 
-        // SchemeEnv env = Core.load();
+    // MsParser parser = new MsParser();
 
-        // for (Expression expression : expressions) {
-        // System.out.println(expression.interpret(env));
-        // }
-    }
+    // List<Expression> expressions = parser.run(tokens);
+
+    // SchemeEnv env = Core.load();
+
+    // for (Expression expression : expressions) {
+    // System.out.println(expression.interpret(env));
+    // }
+  }
 }
