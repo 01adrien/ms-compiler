@@ -1,22 +1,32 @@
 package mscompiler.rvar.compiler;
 
-import java.util.HashMap;
-
 import mscompiler.rvar.expression.*;
 
 public class RvarCompiler {
 
-    private HashMap<String, String> env = new HashMap<>();
+    // private HashMap<String, String> env = ;
 
     public void compile(RvarExpression exp) {
-        RvarExpression uExp = uniquify(exp);
-        System.out.println();
-        print(uExp, 0);
+        RvarExpression e1 = uniquify(exp);
+        RvarExpression e2 = removeComplexOp(e1);
 
     }
 
     private RvarExpression uniquify(RvarExpression exp) {
-        return new UniquifyPass().uniquify(exp, env);
+        System.out.println("UNIQUIFY");
+        RvarExpression res = new UniquifyPass().run(exp);
+        print(res, 0);
+        System.out.println("\n\n" + "-".repeat(30) + "\n");
+        return res;
+
+    }
+
+    private RvarExpression removeComplexOp(RvarExpression exp) {
+        System.out.println("REMOVE COMPLEX OP");
+        RvarExpression res = new RemoveComplexOpPass().run(exp);
+        print(res, 0);
+        System.out.println("\n\n" + "-".repeat(30) + "\n");
+        return res;
     }
 
     public void print(RvarExpression exp, int space) {

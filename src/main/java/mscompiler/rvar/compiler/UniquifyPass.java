@@ -9,6 +9,10 @@ public class UniquifyPass {
 
     private HashMap<String, Integer> countVar = new HashMap<>();
 
+    public RvarExpression run(RvarExpression exp) {
+        return uniquify(exp, new HashMap<>());
+    }
+
     public RvarExpression uniquify(RvarExpression exp, HashMap<String, String> env) {
 
         return switch (exp) {

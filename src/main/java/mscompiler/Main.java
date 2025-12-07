@@ -26,9 +26,8 @@ public class Main {
   public static void rvar() {
 
     String i1 = """
-        (let ([x (let ([x 3]) (+ x 1))])
-          (let ([x (+ x 2)])
-            x))                                                                                                                                                        """;
+        (+ (+ 1 (+ 2 3)) 4)
+          """;
     String i2 = "(let ([x 32]) x)";
 
     Lexer<RvarToken> lexer = new RvarLexerBuilder().build();
@@ -52,7 +51,7 @@ public class Main {
     System.out.println("SRC");
     System.out.println(i1);
     System.out.println();
-    System.out.println("-".repeat(30));
+    System.out.println("-".repeat(30) + "\n");
 
     compiler.compile(exp);
 
